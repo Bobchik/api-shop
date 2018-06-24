@@ -1,0 +1,40 @@
+version: '2'
+services:
+
+  #Database
+  database:
+    image: postgres:latest
+    volumes: 
+      - dbdata:/var/lib/postgresql/data
+    environment:
+      - "POSTGRES_DB:shop"
+      - "POSTGRES_USER:docker"
+      - "POSTGRES_PASSWORD:docker"
+    ports:
+      - 5432:5432
+  
+  # The Application
+  app:
+    build:
+      context: ./
+      dockerfile: app.dockerfile
+    working_dir: /var/www
+    volumes:
+      - ./shop-laravel/:/var/www
+    environment:
+      - "DB_PORT=5432"
+      - "DB_HOST=database"
+
+  # The Web Server
+  web:
+    build:
+      context: ./
+      dockerfile: web.dockerfile
+    working_dir: /var/www
+    volumes_from:
+      - app
+    ports:
+      - 8080:80
+  
+volumes:
+    dbdata:
