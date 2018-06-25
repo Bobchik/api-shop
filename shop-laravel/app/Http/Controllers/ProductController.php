@@ -9,9 +9,7 @@ class ProductController extends Controller
 {
     public function index(Product $product)
     {
-        $product->getToken();
-        $products = $product->getProducts();
-
+        $products = $product->getAllProducts();
         return view('shop.index', compact('products'));
     }
     /**

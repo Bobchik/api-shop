@@ -7,7 +7,7 @@ use GuzzleHttp\Client;
 
 class Product extends Model
 {
-    private $token;
+//    private static $token;
     /**
      * Display a listing of the resource.
      *
@@ -26,7 +26,8 @@ class Product extends Model
 
         $response = $request->getBody();
         $arr = json_decode($response, true);
-        $this->token = $arr['data']['token'];
+
+        session(['api_token' => $arr['data']['token']]);
     }
 
     /**
@@ -34,19 +35,22 @@ class Product extends Model
      *
      * @return array
      */
-    public function getProducts(): array
+    public function getAllProducts(): array
     {
-        $this->getToken();
+        if(session('api_token') == null) {
+            $this->getToken();
+        }
+
         $client = new Client();
         $request = $client->request('GET', '192.168.33.11:8080/api/products', [
             'headers' => [
-                'Authorization' => 'Bearer '.$this->token
+                'Authorization' => 'Bearer '.session('api_token')
             ]
         ]);
-
         $response = $request->getBody();
         $products = json_decode($response);
 
         return $products;
+
     }
 }
